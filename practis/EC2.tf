@@ -63,6 +63,17 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
+variable "public_key_path" {
+  description = "Path to the public SSH key for EC2 access"
+  type        = string
+  default     = "../keys/ansible_ssh.pub"
+}
+
+resource "aws_key_pair" "ansible" {
+  key_name   = "ansible-ec2-key"
+  public_key = file(var.public_key_path)
+}
+
 # EC2 instance
 resource "aws_instance" "ubuntu" {
   ami           = data.aws_ami.ubuntu.id
@@ -71,6 +82,7 @@ resource "aws_instance" "ubuntu" {
   subnet_id                  = data.aws_subnet_ids.default.ids[0]
   vpc_security_group_ids     = [aws_security_group.allow_ssh.id]
   associate_public_ip_address = true
+  key_name = aws_key_pair.ansible.key_name
 
   tags = {
     Name = "ubuntu-t3-micro"

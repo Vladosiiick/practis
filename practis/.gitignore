@@ -1,0 +1,7 @@
+# Ignore SSH keys
+your_key_dir/
+keys/
+*.pem
+*.pub
+ansible_ssh
+ansible_ssh.pub
